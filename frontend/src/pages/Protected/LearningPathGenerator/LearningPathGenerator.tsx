@@ -496,8 +496,8 @@ const LearningPathGenerator: React.FC = () => {
                           }}
                         >
                           <div className="flex items-center gap-2">
-                            <span className="font-medium">{step.order}.</span>
-                            <span className="font-medium">{step.title}</span>
+                           
+                           
                           </div>
                           {step.completed && (
                             <CheckCircle className="h-5 w-5 text-green-500" />
