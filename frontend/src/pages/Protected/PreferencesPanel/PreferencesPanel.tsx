@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { ArrowLeft, Save } from 'lucide-react';
@@ -16,7 +16,7 @@ interface UserPreferences {
   userId: string;
   timeZone: string;
   dailyWorkHours: number;
-  emailNotifications: boolean;
+ 
   theme: string;
 }
 
@@ -26,13 +26,13 @@ const PreferencesPanel: React.FC = () => {
   const { setTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  //const [error, setError] = useState<string | null>(null);
   const [preferences, setPreferences] = useState<UserPreferences>({
     id: '',
     userId: '',
     timeZone: 'UTC',
     dailyWorkHours: 8,
-    emailNotifications: true,
+  
     theme: 'light'
   });
 
@@ -69,8 +69,8 @@ const PreferencesPanel: React.FC = () => {
         setPreferences(data);
         setTheme(data.theme);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Something went wrong');
-        toast.error('Failed to load preferences');
+       // setError(err instanceof Error ? err.message : 'Something went wrong');
+        toast.error(err instanceof Error ? err.message : 'Failed to load preferences');
       } finally {
         setIsLoading(false);
       }
@@ -81,7 +81,7 @@ const PreferencesPanel: React.FC = () => {
     }
   }, [user]);
 
-  const handleChange = (field: keyof UserPreferences, value: any) => {
+  const handleChange = (field: keyof UserPreferences, value: string) => {
     setPreferences(prev => ({
       ...prev,
       [field]: value
@@ -89,7 +89,7 @@ const PreferencesPanel: React.FC = () => {
 
 
     if (field === 'theme') {
-      setTheme(value);
+      setTheme('system');
     }
   };
 
@@ -107,7 +107,7 @@ const PreferencesPanel: React.FC = () => {
         body: JSON.stringify({
           timeZone: preferences.timeZone,
           dailyWorkHours: Number(preferences.dailyWorkHours),
-          emailNotifications: preferences.emailNotifications,
+          
           theme: preferences.theme
         })
       });
@@ -119,7 +119,7 @@ const PreferencesPanel: React.FC = () => {
 
       toast.success('Preferences updated successfully');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+     // setError(err instanceof Error ? err.message : 'Something went wrong');
       toast.error(err instanceof Error ? err.message : 'Failed to update preferences');
     } finally {
       setIsSaving(false);
@@ -194,11 +194,11 @@ const PreferencesPanel: React.FC = () => {
                     Receive email notifications about updates and alerts
                   </p>
                 </div>
-                <Switch
-                  id="emailNotifications"
-                  checked={preferences.emailNotifications}
-                  onCheckedChange={(checked) => handleChange('emailNotifications', checked)}
-                />
+                
+                
+                
+                
+                
               </div>
 
               <div className="space-y-1">
