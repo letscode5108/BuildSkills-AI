@@ -182,9 +182,9 @@ const ProjectRecommendations: React.FC = () => {
                     </div>
                   </CardContent>
                   <CardFooter className="pt-0">
-                    <Button variant="outline" size="sm" className="w-full h-10 text-base hover:bg-indigo-50 hover:text-indigo-700 dark:hover:bg-indigo-950 dark:hover:text-indigo-300 border-indigo-200 dark:border-indigo-800">
-                      Start Project
-                    </Button>
+
+                    
+                  
                   </CardFooter>
                 </Card>
               );
