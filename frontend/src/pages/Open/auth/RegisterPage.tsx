@@ -28,6 +28,7 @@ const Register: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -46,13 +47,10 @@ const Register: React.FC = () => {
      
      
      
-      navigate('/login');
+      navigate('/');
     } catch (error) {
-     
-     setError(error instanceof Error ? error.message : 'Something went wrong');
-     toast.error('Account creation failed');
-     
-     
+      const errorMessage = error instanceof Error ? error.message : 'Account creation failed';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

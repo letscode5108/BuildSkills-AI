@@ -22,7 +22,25 @@ const ProjectGuide = () => {
   const [error, setError] = useState('');
   
   // Result state
-  const [result, setResult] = useState(null);
+  interface ProjectGuideResult {
+    project: {
+      title: string;
+      difficulty: string;
+    };
+    guide: {
+      description: string;
+      estimatedHours: number;
+      steps: Array<{
+        title: string;
+        description: string;
+        estimatedHours: number;
+        codeSnippets?: string[];
+        resources?: string[];
+        checkpoints?: string[];
+      }>;
+    };
+  }
+  const [result, setResult] = useState<ProjectGuideResult | null>(null);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,7 +70,7 @@ const ProjectGuide = () => {
       
       const data = await response.json();
       setResult(data);
-    } catch (err: any) {
+    } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setIsLoading(false);
@@ -60,137 +78,6 @@ const ProjectGuide = () => {
   };
 
   // For demo/testing purposes
-  const handleQuickDemo = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setResult({
-        project: {
-          id: "cm8gunv62001nhuy08q4voezu",
-          title: "Todo App",
-          description: "A React project for BEGINNER developers",
-          difficulty: "BEGINNER",
-          status: "NOT_STARTED",
-          progress: 0,
-          estimatedHours: 3,
-          userId: "cm7nrhxre0000hutogttd8qgn",
-          createdAt: "2025-03-20T04:27:09.578Z",
-          updatedAt: "2025-03-20T04:27:09.578Z",
-          startDate: null,
-          endDate: null,
-          completedAt: null
-        },
-        guide: {
-          title: "Todo App",
-          description: "A simple todo app built with React allowing users to add, mark as complete, and delete todo items. This guide is designed for beginners with basic HTML, CSS, and JavaScript knowledge.",
-          estimatedHours: 3,
-          steps: [
-            {
-              title: "Project Setup",
-              description: "Create a new React project using Create React App.",
-              codeSnippets: [
-                "# Create a new React project",
-                "npx create-react-app todo-app",
-                "",
-                "# Navigate to the project directory",
-                "cd todo-app",
-                "",
-                "# Start the development server",
-                "npm start"
-              ],
-              resources: [
-                "https://create-react-app.dev/docs/getting-started",
-                "https://reactjs.org/docs/create-a-new-react-app.html"
-              ],
-              estimatedHours: 0.5,
-              checkpoints: [
-                "Verify that the React development server starts successfully",
-                "Check that you can see the React logo on http://localhost:3000"
-              ]
-            },
-            {
-              title: "Component Structure",
-              description: "Create the main App component and a Todo component.",
-              codeSnippets: [
-                "// src/App.js",
-                "// Main App component that will contain our Todo application",
-                "import React, { useState } from 'react';",
-                "import Todo from './Todo';",
-                "",
-                "function App() {",
-                "  return (",
-                "    <div className='app'>",
-                "      <h1>Todo App</h1>",
-                "      <Todo />",
-                "    </div>",
-                "  );",
-                "}",
-                "",
-                "export default App;",
-                "",
-                "// src/Todo.js",
-                "// Todo component that will manage our todo items",
-                "import React from 'react';",
-                "",
-                "function Todo() {",
-                "  return (",
-                "    <div>Todo Component</div>",
-                "  );",
-                "}",
-                "",
-                "export default Todo;"
-              ],
-              resources: [
-                "https://reactjs.org/docs/components-and-props.html",
-                "https://reactjs.org/docs/jsx-in-depth.html"
-              ],
-              estimatedHours: 0.5,
-              checkpoints: [
-                "Verify that both components render without errors",
-                "Check that the components are properly imported and exported"
-              ]
-            },
-            {
-              title: "State Management for Todos",
-              description: "Use the `useState` hook in the App component to manage the todo list.",
-              codeSnippets: [
-                "// src/App.js",
-                "import React, { useState } from 'react';",
-                "import Todo from './Todo';",
-                "",
-                "function App() {",
-                "  // Initialize state with an empty array",
-                "  // todos: array of todo objects",
-                "  // setTodos: function to update the todos state",
-                "  const [todos, setTodos] = useState([]);",
-                "  ",
-                "  return (",
-                "    <div className='app'>",
-                "      <h1>Todo App</h1>",
-                "      {/* Pass todos and setTodos as props to Todo component */}",
-                "      <Todo todos={todos} setTodos={setTodos} />",
-                "    </div>",
-                "  );",
-                "}",
-                "",
-                "export default App;"
-              ],
-              resources: [
-                "https://reactjs.org/docs/hooks-state.html",
-                "https://reactjs.org/docs/hooks-overview.html"
-              ],
-              estimatedHours: 0.25,
-              checkpoints: [
-                "Verify that the useState hook is imported correctly",
-                "Check that the todos state is initialized as an empty array",
-                "Ensure that todos and setTodos are passed as props to the Todo component"
-              ]
-            }
-          ]
-        }
-      });
-      setIsLoading(false);
-    }, 1000);
-  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch(difficulty?.toUpperCase()) {
@@ -310,15 +197,6 @@ const ProjectGuide = () => {
                 )}
               </Button>
               
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={handleQuickDemo} 
-                className="py-6 text-lg"
-                disabled={isLoading}
-              >
-                Quick Demo
-              </Button>
             </div>
           </form>
           

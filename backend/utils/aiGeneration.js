@@ -12,6 +12,7 @@ export async function generatePrerequisites(framework, skillLevel) {
     3. Recommended development environment more details(with names of tools(must) and their purpose) 3 lines
     4. Learning objectives
     5.ATLEST 10 LINES IN description of each point
+    6.In fundamentals concepts also include what concept someone will learn for the framework mandetory one
     Format the response as a JSON with the following structure:
     
     {

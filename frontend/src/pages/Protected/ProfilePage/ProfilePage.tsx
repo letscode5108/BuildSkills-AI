@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+//import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { ArrowLeft, Save, Settings, User as UserIcon } from 'lucide-react';
 
@@ -16,7 +16,7 @@ interface UserProfile {
   email: string;
   image?: string;
 
-  projects?: any[];
+ 
 }
 
 const ProfilePage: React.FC = () => {
@@ -24,7 +24,7 @@ const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  //const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile>({
     id: '',
     name: '',
@@ -56,8 +56,8 @@ const ProfilePage: React.FC = () => {
         const data = await response.json();
         setProfile(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Something went wrong');
-        toast.error('Failed to load profile');
+  
+        toast.error(err instanceof Error ? err.message :'Failed to load profile');
       } finally {
         setIsLoading(false);
       }
@@ -68,7 +68,7 @@ const ProfilePage: React.FC = () => {
     }
   }, [user]);
 
-  const handleChange = (field: keyof UserProfile, value: any) => {
+  const handleChange = (field: keyof UserProfile, value: string) => {
     setProfile(prev => ({
       ...prev,
       [field]: value
@@ -103,7 +103,7 @@ const ProfilePage: React.FC = () => {
       setUser((prevUser) => prevUser ? { ...prevUser, ...updatedProfile } : updatedProfile);
       toast.success('Profile updated successfully');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+   
       toast.error(err instanceof Error ? err.message : 'Failed to update profile');
     } finally {
       setIsSaving(false);

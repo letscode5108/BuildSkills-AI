@@ -56,8 +56,8 @@ const FrameworkExplorer: React.FC = () => {
       );
       setExplanation(response.data.explanation);
       setActiveTab('explanation');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch explanation');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch explanation');
     } finally {
       setLoading(false);
     }

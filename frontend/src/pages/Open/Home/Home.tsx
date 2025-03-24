@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { ArrowRight, BookOpen, Code, Layout, CheckCircle, Target, Sparkles, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import girlwithcomputer from '../../../images/girl.jpg';

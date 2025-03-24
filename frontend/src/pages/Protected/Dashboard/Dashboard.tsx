@@ -18,7 +18,7 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+ // const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -37,8 +37,9 @@ const Dashboard: React.FC = () => {
         const data = await response.json();
         setProfile(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Something went wrong');
-        toast.error('Failed to load profile data');
+ 
+       // setError(err instanceof Error ? err.message : 'Something went wrong');
+       toast.error(err instanceof Error ? err.message : 'Something went wrong');
       } finally {
         setIsLoading(false);
       }
@@ -53,19 +54,11 @@ const Dashboard: React.FC = () => {
     try {
       await logout();
       navigate('/login');
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Something went wrong');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Something went wrong');
     }
   };
 
-  // Get user initials for avatar
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(part => part[0])
-      .join('')
-      .toUpperCase();
-  };
 
   if (!user) return null;
 
@@ -112,9 +105,9 @@ const Dashboard: React.FC = () => {
                   <Lightbulb className="h-10 w-10 text-white" />
                 </div>
                 <div className="flex-grow">
-                  <h3 className="text-3xl font-bold mb-2">AI Learning Prerequisites</h3>
+                  <h3 className="text-3xl font-bold mb-2">Know Your Prerequisites</h3>
                   <p className="text-xl text-blue-100 mb-4 max-w-3xl">
-                    Get started with the fundamental concepts you need before diving into AI projects.
+                    Get started with the fundamental concepts you need before diving into  projects.
                   </p>
                 </div>
                 <div className="flex items-center mt-4 md:mt-0">
@@ -125,26 +118,6 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
           
-          {/* Explore Frameworks */}
-          <div className="mb-6 group cursor-pointer" onClick={() => navigate('/explore')}>
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-102 hover:shadow-xl group-hover:from-emerald-600 group-hover:to-teal-700">
-              <div className="flex flex-col md:flex-row items-start md:items-center">
-                <div className="bg-emerald-400 bg-opacity-50 p-4 rounded-full mb-4 md:mb-0 md:mr-6">
-                  <Compass className="h-10 w-10 text-white" />
-                </div>
-                <div className="flex-grow">
-                  <h3 className="text-3xl font-bold mb-2">Explore Frameworks</h3>
-                  <p className="text-xl text-emerald-100 mb-4 max-w-3xl">
-                    Discover popular frameworks and technologies for your AI development journey.
-                  </p>
-                </div>
-                <div className="flex items-center mt-4 md:mt-0">
-                  <span className="text-xl font-bold mr-2">Explore Now</span>
-                  <ChevronRight className="h-6 w-6" />
-                </div>
-              </div>
-            </div>
-          </div>
           
           {/* Project Recommendations */}
           <div className="mb-6 group cursor-pointer" onClick={() => navigate('/project-recommendations')}>
@@ -166,6 +139,32 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
+         
+
+             {/* Explore Frameworks */}
+         <div className="mb-6 group cursor-pointer" onClick={() => navigate('/explore')}>
+      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-8 shadow-lg transform transition-all duration-300 hover:scale-102 hover:shadow-xl group-hover:from-emerald-600 group-hover:to-teal-700">
+        <div className="flex flex-col md:flex-row items-start md:items-center">
+          <div className="bg-emerald-400 bg-opacity-50 p-4 rounded-full mb-4 md:mb-0 md:mr-6">
+            <Compass className="h-10 w-10 text-white" />
+          </div>
+          <div className="flex-grow">
+            <h3 className="text-3xl font-bold mb-2">Sharpen Your concept</h3>
+            <p className="text-xl text-emerald-100 mb-4 max-w-3xl">
+              Clear your concepts before diving into making Project .
+            </p>
+          </div>
+          <div className="flex items-center mt-4 md:mt-0">
+            <span className="text-xl font-bold mr-2">Explore Now</span>
+            <ChevronRight className="h-6 w-6" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
           
           {/* Project Guide */}
           <div className="mb-6 group cursor-pointer" onClick={() => navigate('/projectguide')}>
@@ -177,7 +176,7 @@ const Dashboard: React.FC = () => {
                 <div className="flex-grow">
                   <h3 className="text-3xl font-bold mb-2">Project Guide</h3>
                   <p className="text-xl text-purple-100 mb-4 max-w-3xl">
-                    Step-by-step tutorials and best practices for completing AI projects.
+                    Step-by-step tutorials and best practices for completing  projects.
                   </p>
                 </div>
                 <div className="flex items-center mt-4 md:mt-0">

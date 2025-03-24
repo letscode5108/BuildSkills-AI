@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Schedule next refresh (4 days)
         setTimeout(refreshAccessToken, 4 * 24 * 60 * 60 * 1000);
       } catch (error) {
+        console.error('Token refresh failed:', error);
         // If refresh fails, log out the user
         setUser(null);
         localStorage.removeItem('user');

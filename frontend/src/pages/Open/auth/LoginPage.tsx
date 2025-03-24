@@ -24,6 +24,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   
   const [isLoading, setIsLoading] = useState(false);
+    //const [error, setError] = useState<string | null>(null);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -42,10 +43,15 @@ const Login: React.FC = () => {
       
       
       navigate('/Dashboard');
-    } catch (error) {
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'login failed');
     
-      setError(error instanceof Error ? error.message : 'Something went wrong');
-       toast.error('Login failed');
+    
+    
+    
+     
+     
+     
     } finally {
       setIsLoading(false);
     }
@@ -114,3 +120,6 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+
+
+
