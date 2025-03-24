@@ -1,0 +1,369 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String?
+  password       String    // Hashed password
+  hashedToken    String?   // For password reset/remember me
+  emailVerified  DateTime? // Email verification timestamp
+  verifyToken    String?   @unique // Email verification token
+  image          String?   // Profile image URL
+  skillLevel     SkillLevel @default(BEGINNER)
+  projects       Project[]
+  stepProgress   UserStepProgress[]
+  preferences    UserPreferences?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Optional: for session management
+  sessions       Session[]
+  // Add relation to ProjectRecommendation
+  projectRecommendations ProjectRecommendation[]
+  // Add relation to FrameworkExplanation
+  frameworkExplanations  FrameworkExplanation[]
+   assessments     Assessment[]
+  certificates    Certificate[]
+}
+
+// Session model for managing user sessions
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token        String   @unique // Session token
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// User preferences for customization
+model UserPreferences {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timeZone       String    @default("UTC")
+  dailyWorkHours Int       @default(8)
+  emailNotifications Boolean @default(true)
+  theme          String    @default("light")
+}
+
+// Project model for storing project details
+model Project {
+  id             String    @id @default(cuid())
+  
+  title          String
+  description    String
+  difficulty     SkillLevel
+  status         ProjectStatus @default(NOT_STARTED)
+  progress       Float     @default(0)
+  estimatedHours Float
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks          Task[]
+  milestones     Milestone[]
+  techStack      TechStack[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  startDate      DateTime?
+  endDate        DateTime?
+  completedAt    DateTime?
+  // Add relation to ProjectSteps
+  projectSteps   ProjectStep[]
+  // Add relation to indicate if this is an AI recommended project
+  recommendation ProjectRecommendation?
+}
+
+// Task model for project breakdown
+model Task {
+  id             String    @id @default(cuid())
+  title          String
+  description    String?
+  status         TaskStatus @default(NOT_STARTED)
+  priority       Priority   @default(MEDIUM)
+  estimatedHours Float
+  actualHours    Float?
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  parentTaskId   String?
+  parentTask     Task?     @relation("SubTasks", fields: [parentTaskId], references: [id])
+  subTasks       Task[]    @relation("SubTasks")
+  dependencies   TaskDependency[] @relation("DependentTask")
+  dependentOn    TaskDependency[] @relation("RequiredTask")
+  milestoneId    String?
+  milestone      Milestone? @relation(fields: [milestoneId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  startDate      DateTime?
+  endDate        DateTime?
+  completedAt    DateTime?
+}
+
+// Task dependencies
+model TaskDependency {
+  id             String    @id @default(cuid())
+  dependentTaskId String
+  dependentTask  Task      @relation("DependentTask", fields: [dependentTaskId], references: [id], onDelete: Cascade)
+  requiredTaskId String
+  requiredTask   Task      @relation("RequiredTask", fields: [requiredTaskId], references: [id], onDelete: Cascade)
+  createdAt      DateTime  @default(now())
+
+  @@unique([dependentTaskId, requiredTaskId])
+}
+
+// Milestone model for tracking major achievements
+model Milestone {
+  id             String    @id @default(cuid())
+  title          String
+  description    String?
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks          Task[]
+  targetDate     DateTime
+  completedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+// Technology stack for projects
+model TechStack {
+  id             String    @id @default(cuid())
+  name           String
+  category       TechCategory
+  projects       Project[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([name, category])
+}
+
+model LearningPath {
+  id             String    @id @default(cuid())
+  title          String
+  description    String
+  technology     String
+  skillLevel     SkillLevel
+  steps          LearningStep[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  prerequisites  Prerequisite[]
+ assessments    Assessment[]
+  certificates   Certificate[]
+}
+
+model LearningStep {
+  id             String    @id @default(cuid())
+  title          String
+  content        String    @db.Text
+  order          Int
+  learningPathId String
+  learningPath   LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  completedByUsers UserStepProgress[]
+}
+
+model UserStepProgress {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stepId         String
+  step           LearningStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  completed      Boolean   @default(false)
+  completedAt    DateTime?
+
+  @@unique([userId, stepId])
+}
+
+model AIGeneratedContent {
+  id             String    @id @default(cuid())
+  prompt         String    @db.Text
+  response       String    @db.Text
+  type           String    // "project_suggestion", "learning_path", etc.
+  parameters     Json      // Store parameters used for generation
+  createdAt      DateTime  @default(now())
+  expiresAt      DateTime? // For content that should be refreshed
+}
+
+// NEW MODELS FOR AI GENERATION FUNCTIONS
+
+// Model for project recommendations generated by AI
+model ProjectRecommendation {
+  id             String    @id @default(cuid())
+  framework      String    // Framework used (React, Angular, etc.)
+  skillLevel     SkillLevel
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime  @default(now())
+  expiresAt      DateTime?
+
+  // Project details recommended by AI
+  projectName    String
+  description    String
+  keySkills      String[]
+  completionTime String
+  
+  // If user decided to create this project
+  implementedAsProject Project? @relation(fields: [projectId], references: [id])
+  projectId      String?      @unique
+}
+
+// Model for project steps generated by AI
+model ProjectStep {
+  id             String    @id @default(cuid())
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  stepNumber     Int
+  title          String
+  description    String    @db.Text
+  codeExample    String?   @db.Text
+  category       StepCategory // setup, component, implementation, testing, deployment
+  estimatedTime  String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  @@unique([projectId, stepNumber])
+}
+
+// Model for framework concept explanations
+model FrameworkExplanation {
+  id             String    @id @default(cuid())
+  framework      String
+  concept        String
+  explanation    String    @db.Text
+  codeExample    String    @db.Text
+  pitfalls       String    @db.Text
+  bestPractices  String    @db.Text
+  userId         String?   // Optional: track who requested this explanation
+  user           User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt      DateTime  @default(now())
+  expiresAt      DateTime?
+  
+  @@unique([framework, concept])
+}
+
+// Model for prerequisites generated by AI
+model Prerequisite {
+  id                  String    @id @default(cuid())
+  framework           String
+  backgroundKnowledge String    @db.Text
+  fundamentalConcepts String    @db.Text
+  devEnvironment      String    @db.Text
+  learningPath        String    @db.Text
+  createdAt           DateTime  @default(now())
+  expiresAt           DateTime?
+  
+  // Related learning path if applicable
+  learningPathId      String?
+  relatedLearningPath LearningPath? @relation(fields: [learningPathId], references: [id])
+
+}
+
+// Add these models to your existing schema
+
+model Assessment {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  learningPathId String
+  learningPath   LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  questions      Json      // Store assessment questions
+  userAnswers    Json?     // Store user's answers
+  score          Float?    // User's score percentage
+  status         AssessmentStatus @default(PENDING)
+  passingScore   Float     // Minimum score required to pass
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  completedAt    DateTime? // When the user completed the assessment
+  expiresAt      DateTime  // When the assessment expires
+  
+  // Relation to Certificate
+  certificate    Certificate?
+}
+
+model Certificate {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  learningPathId String
+  learningPath   LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  assessmentId   String    @unique
+  assessment     Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  issueDate      DateTime
+  score          Float
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+// Add this enum to your existing enums
+enum AssessmentStatus {
+  PENDING
+  PASSED
+  FAILED
+  EXPIRED
+}
+
+// ENUMS
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ProjectStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  ABANDONED
+}
+
+enum TaskStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TechCategory {
+  FRONTEND
+  BACKEND
+  DATABASE
+  DEVOPS
+  TESTING
+  OTHER
+  FULLSTACK
+  MOBILE
+  DATASCIENCE
+}
+
+// New enum for project step categories
+enum StepCategory {
+  SETUP
+  COMPONENT
+  IMPLEMENTATION
+  TESTING
+  DEPLOYMENT
+}
+
+
+
+
