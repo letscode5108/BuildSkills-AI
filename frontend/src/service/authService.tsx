@@ -39,7 +39,7 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 };
 
 export const register = async (name: string, email: string, password: string): Promise<RegisterResponse> => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}}/api/v1/auth/register`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

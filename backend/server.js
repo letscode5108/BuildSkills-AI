@@ -5,14 +5,14 @@ import cookieParser from "cookie-parser";
 import { configDotenv } from "dotenv";
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 10000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: "http://localhost:5173",
   credentials: true
 }));
 configDotenv();
@@ -32,6 +32,6 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.listen(PORT, () => {
+app.listen(PORT,"0.0.0.0", () => {
     console.log(`Server is running on port ${PORT}`);
 })
