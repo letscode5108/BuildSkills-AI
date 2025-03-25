@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(cors({
-  origin: "https://build-skills-byai.vercel.app",
+  origin: "https://build-skills-ai.vercel.app",
   credentials: true
 }));
 configDotenv();
