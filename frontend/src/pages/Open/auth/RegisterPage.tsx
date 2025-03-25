@@ -47,7 +47,7 @@ const Register: React.FC = () => {
      
      
      
-      navigate('/');
+      navigate('/Dashboard');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Account creation failed';
       toast.error(errorMessage);
