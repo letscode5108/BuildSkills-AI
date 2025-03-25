@@ -89,7 +89,7 @@ const PreferencesPanel: React.FC = () => {
 
 
     if (field === 'theme') {
-      setTheme('system');
+      setTheme('light');
     }
   };
 
