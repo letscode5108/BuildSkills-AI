@@ -43,11 +43,12 @@ const Register: React.FC = () => {
     setIsLoading(true);
     try {
       await registerUser(data.name, data.email, data.password);
-      toast.success('Account created successfully');
+      toast.success('Account created successfully. Please login to continue');
      
      
      
-      navigate('/Dashboard');
+      navigate('/login');
+ 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Account creation failed';
       toast.error(errorMessage);
