@@ -36,7 +36,6 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-
           <Route path="/Dashboard"   element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute> }  />
           <Route path="/Profile" element={ <ProtectedRoute> <ProfilePage /> </ProtectedRoute> } />
          <Route path="/Preferences" element={ <ProtectedRoute> <PreferencesPanel /> </ProtectedRoute> } />
